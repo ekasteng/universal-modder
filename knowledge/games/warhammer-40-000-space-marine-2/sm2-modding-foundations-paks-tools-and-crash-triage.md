@@ -96,10 +96,12 @@ files don't stream). Paks are what you ship.
   Store). The engine streams `tpl_data` and texture mips by byte range straight out of the pak. A DEFLATED pak loads
   but renders black textures and invisible near LODs.
 - **Write plain local headers: no zip64.** Python's `ZipFile.open(info, "w", force_zip64=True)` gives every local
-  header version 4.5 and a 20-byte zip64 extra field that the central directory doesn't carry. A pak written that way
-  mounts but breaks the game's text at startup and loops an arena load back to the menu (gotcha 13). The same files
-  repacked with plain headers (version 2.0, extra length 0, data right after the name) loaded. Set `info.file_size`
-  and leave `force_zip64` False; entries stay far under 4 GB. Check every local header after writing.
+  header version 4.5, `0xFFFFFFFF` in both 32-bit size fields and a 20-byte zip64 extra field holding the real sizes,
+  which the central directory doesn't carry. A pak written that way mounts but breaks the game's text at startup and
+  loops an arena load back to the menu (gotcha 13). The same files repacked with plain headers (version 2.0, extra
+  length 0, data right after the name) loaded. Set `info.file_size` and leave `force_zip64` False: CPython only
+  switches to zip64 by itself for entries near 2 GiB (`ZIP64_LIMIT`), and pak entries stay far under that. Check
+  every local header after writing.
 
 ### Manifests (`.resource`) and the crash rules they cause
 - `.sso.resource` has several link sections (`linksDesc`, `linksDescWeak`, `linksSsl`, `parents`, `dynamicLinks`).

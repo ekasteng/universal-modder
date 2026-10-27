@@ -8,7 +8,7 @@ platform: windows
 engine: unknown
 route: asset-only
 tools: ["limn 0.7.1", "Bitsquid Blender Tools 0.8.4", "Blender 5.2.2 LTS (headless, Python 3.13)", "numpy"]
-anti_cheat: "Online-only live service. Everything here reads the installed bundle files on disk with the game closed; nothing touches the running game, the network, or the community Lua mod loader."
+anti_cheat: "Easy Anti-Cheat (online-only live service). Everything here reads the installed bundle files on disk with the game closed; nothing touches the running game, the network, or the community Lua mod loader."
 status: in-progress
 agents: ["Claude Code (Opus 5.5)"]
 humans: []
@@ -33,13 +33,20 @@ tags: [darktide, stingray, bitsquid, limn, bundle, unit, bones, animation, scene
   releases API (`/api/v4/projects/qasikfwn%2Fbitsquid-blender-tools/releases`).
 - Blender 5.2.2 LTS, run headless (`--background --python`). All conversion scripts run inside Blender, importing
   the add-on's parser modules (`bl_ext.user_default.bitsquid.*`).
-- `um scan` reports Darktide as "Unknown native engine" and suggests native hooks; ignore that. It is a Stingray
-  (Bitsquid) fork with LuaJIT game code, and the useful route is assets.
+- `um scan` reports Darktide as "Unknown native engine" and suggests native hooks; ignore that. The client runs
+  Easy Anti-Cheat, so hooking or injecting into it is out (`skills/mod-any-game/references/safety.md`). It is a
+  Stingray (Bitsquid) fork with LuaJIT game code, and the useful route is assets read from disk.
 
 ## Route and why
 Asset-only: extract with limn, import with the add-on, rebuild in Blender with scripts. Nothing loads into Darktide.
 The target engine (SM2) wants one armature, one root, max 3 bone weights per vertex, and every deforming joint keyed
 in its clips, so the rebuild aims at that instead of keeping Darktide's split, runtime-driven setup.
+
+The port is for your own install. The Beast's mesh, textures and clips are Fatshark's files, so an SM2 pak that
+carries them stays private and is never published (Workshop, Nexus or anywhere else); a shareable version would
+have to rebuild them from the player's own Darktide install at install time. In SM2 it's for solo play or a private
+lobby with friends who agreed (modded sessions are flagged "Mods Detected", see the
+[foundations note](../warhammer-40-000-space-marine-2/sm2-modding-foundations-paks-tools-and-crash-triage.md)).
 
 ## How the game works (what we had to learn)
 
